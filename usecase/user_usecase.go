@@ -1,13 +1,19 @@
 package usecase
 
 import (
+	"os"
+	"time"
+
 	"github.com/bookkyjung1221/echo-clean-architecture/model"
 	"github.com/bookkyjung1221/echo-clean-architecture/repository"
 	"github.com/bookkyjung1221/echo-clean-architecture/validator"
+	"github.com/golang-jwt/jwt/v4"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type IUserUsecase interface {
+	SignUp(user model.User) (model.UserResponse, error)
+	Login(user model.User) (string, error)
 }
 
 type userUsecase struct {
@@ -57,5 +63,15 @@ func (uu *userUsecase) Login(user model.User) (string, error) {
 		return "", err
 	}
 
-	return "", err
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"user_id": storedUser.ID,
+		"exp":     time.Now().Add(time.Hour * 12).Unix(),
+	})
+
+	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET")))
+	if err != nil {
+		return "", err
+	}
+
+	return tokenString, nil
 }
