@@ -1,13 +1,14 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/bookkyjung1221/echo-clean-architecture/model"
 	"github.com/bookkyjung1221/echo-clean-architecture/usecase"
 
-	"github.com/golang-jwt/jwt/v4"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 )
 
@@ -37,7 +38,13 @@ func (tc *taskController) GetAllTasks(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	return c.JSON(http.StatusOK, tasksRes)
+	res := &model.TaskResponseDetail{
+		TaskResponse: tasksRes,
+		Code:         http.StatusOK,
+		Message:      "Get All Tasks Success",
+	}
+
+	return c.JSON(http.StatusOK, res)
 }
 
 func (tc *taskController) GetTaskById(c echo.Context) error {
@@ -49,10 +56,19 @@ func (tc *taskController) GetTaskById(c echo.Context) error {
 	taskRes, err := tc.tu.GetTaskById(uint(userId.(float64)), uint(taskId))
 
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err.Error())
+		return c.JSON(http.StatusInternalServerError, &model.TaskResponseError{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
 	}
 
-	return c.JSON(http.StatusOK, taskRes)
+	res := &model.TaskResponseOneDetail{
+		TaskResponse: taskRes,
+		Code:         http.StatusOK,
+		Message:      "Get Task By ID Success",
+	}
+
+	return c.JSON(http.StatusOK, res)
 }
 
 func (tc *taskController) CreateTask(c echo.Context) error {
@@ -63,16 +79,28 @@ func (tc *taskController) CreateTask(c echo.Context) error {
 	task := model.Task{}
 
 	if err := c.Bind(&task); err != nil {
-		return c.JSON(http.StatusBadRequest, err.Error())
+		return c.JSON(http.StatusBadRequest, &model.TaskResponseError{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		})
 	}
 
 	task.UserId = uint(userId.(float64))
 	taskRes, err := tc.tu.CreateTask(task)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err.Error())
+		return c.JSON(http.StatusInternalServerError, &model.TaskResponseError{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
 	}
 
-	return c.JSON(http.StatusCreated, taskRes)
+	res := &model.TaskResponseOneDetail{
+		TaskResponse: taskRes,
+		Code:         http.StatusCreated,
+		Message:      "Create Task Success",
+	}
+
+	return c.JSON(http.StatusCreated, res)
 }
 
 func (tc *taskController) UpdateTask(c echo.Context) error {
@@ -85,15 +113,27 @@ func (tc *taskController) UpdateTask(c echo.Context) error {
 	task := model.Task{}
 
 	if err := c.Bind(&task); err != nil {
-		return c.JSON(http.StatusBadRequest, err.Error())
+		return c.JSON(http.StatusBadRequest, &model.TaskResponseError{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		})
 	}
 
 	taskRes, err := tc.tu.UpdateTask(task, uint(userId.(float64)), uint(taskId))
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err.Error())
+		return c.JSON(http.StatusInternalServerError, &model.TaskResponseError{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
 	}
 
-	return c.JSON(http.StatusOK, taskRes)
+	res := &model.TaskResponseOneDetail{
+		TaskResponse: taskRes,
+		Code:         http.StatusOK,
+		Message:      "Update Task Success",
+	}
+
+	return c.JSON(http.StatusOK, res)
 }
 
 func (tc *taskController) DeleteTask(c echo.Context) error {
@@ -106,8 +146,18 @@ func (tc *taskController) DeleteTask(c echo.Context) error {
 	err := tc.tu.DeleteTask(uint(userId.(float64)), uint(taskId))
 
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err.Error())
+		return c.JSON(http.StatusInternalServerError, &model.TaskResponseError{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
 	}
 
-	return c.JSON(http.StatusOK, "Delete success")
+	message := fmt.Sprintf("Delete taskId %s Success", id)
+
+	res := &model.TaskResponseDelete{
+		Code:    http.StatusOK,
+		Message: message,
+	}
+
+	return c.JSON(http.StatusOK, res)
 }

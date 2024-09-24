@@ -17,3 +17,25 @@ type TaskResponse struct {
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
+
+type TaskResponseDetail struct {
+	TaskResponse []TaskResponse
+	Code         int    `json:"code"`
+	Message      string `json:"message"`
+}
+
+type TaskResponseOneDetail struct {
+	TaskResponse TaskResponse
+	Code         int    `json:"code"`
+	Message      string `json:"message"`
+}
+
+type TaskResponseDelete struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+}
+
+type TaskResponseError struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+}

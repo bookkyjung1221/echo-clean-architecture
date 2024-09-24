@@ -33,8 +33,12 @@ func (uc *userController) SignUp(c echo.Context) error {
 
 	userRes, err := uc.uu.SignUp(user)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err.Error())
+		return c.JSON(http.StatusInternalServerError, &model.UserResponseDetail{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
 	}
+
 	return c.JSON(http.StatusCreated, userRes)
 }
 
@@ -45,8 +49,12 @@ func (uc *userController) LogIn(c echo.Context) error {
 	}
 
 	tokenString, err := uc.uu.Login(user)
+
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err.Error())
+		return c.JSON(http.StatusInternalServerError, &model.UserResponseDetail{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
 	}
 
 	cookie := new(http.Cookie)
@@ -60,7 +68,12 @@ func (uc *userController) LogIn(c echo.Context) error {
 	cookie.SameSite = http.SameSiteNoneMode
 	c.SetCookie(cookie)
 
-	return c.JSON(http.StatusOK, "Login Success")
+	res := &model.UserResponseDetail{
+		Code:    http.StatusCreated,
+		Message: "Login Success",
+	}
+
+	return c.JSON(http.StatusOK, res)
 }
 
 func (uc *userController) LogOut(c echo.Context) error {
@@ -75,7 +88,12 @@ func (uc *userController) LogOut(c echo.Context) error {
 	cookie.SameSite = http.SameSiteNoneMode
 	c.SetCookie(cookie)
 
-	return c.JSON(http.StatusOK, "Logout Success")
+	res := &model.UserResponseDetail{
+		Code:    http.StatusOK,
+		Message: "Logout Success",
+	}
+
+	return c.JSON(http.StatusOK, res)
 }
 
 func (uc *userController) CsrfToken(c echo.Context) error {

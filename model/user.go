@@ -14,3 +14,8 @@ type UserResponse struct {
 	ID    uint   `json:"id" gorm:"primaryKey"`
 	Email string `json:"email" gorm:"unique"`
 }
+
+type UserResponseDetail struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+}
