@@ -2,7 +2,7 @@
 # clone this repository
 git clone https://github.com/bookkyjung1221/echo-clean-architecture.git
 
-#if not have air please install air first
+# if not have air please install air first
 go install github.com/air-verse/air@latest
 
 # start db
