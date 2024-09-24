@@ -15,6 +15,6 @@ go run migrate/migrate.go
 air
 
 # stop db
-docker compose rm -s -f -v
+docker compose down
 
 ```
